@@ -105,8 +105,8 @@ agents = [
 
 # Função para classificar o problema
 def classificar_problema(texto):
-    palavras_tecnicas = ["sinal", "instalação", "configuração", "conexão", "equipamento", "internet", "reparo"]
-    palavras_juridicas = ["contrato", "reembolso", "cancelamento", "fatura", "dívida", "regulamento", "lei"]
+    palavras_tecnicas = ["sinal", "instalação", "configuração", "conexão", "equipamento", "internet", "reparo", "conexao"]
+    palavras_juridicas = ["contrato", "reembolso", "cancelamento", "fatura", "dívida", "regulamento", "lei", "comunicado", "pagamento", "divida"]
     tecnico_score = sum(1 for palavra in palavras_tecnicas if palavra in texto.lower())
     juridico_score = sum(1 for palavra in palavras_juridicas if palavra in texto.lower())
     if tecnico_score > juridico_score:
