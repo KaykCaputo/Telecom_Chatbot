@@ -8,16 +8,16 @@ from bs4 import BeautifulSoup
 
 # Funções para carregar as chaves de API
 def get_openai_api_key():
-   with open('./keys/API_LLM_OpenAI.txt', 'r') as file:
-       return file.read().strip()
+    with open('./keys/API_LLM_OpenAI.txt', 'r') as file:
+        return file.read().strip()
 
 def get_groq_api_key():
-   with open('./keys/API_Groq.txt', 'r') as file:
-       return file.read().strip()
+    with open('./keys/API_Groq.txt', 'r') as file:
+        return file.read().strip()
 
 def get_serper_api_key():
-   with open('./keys/API_Serper.txt', 'r') as file:
-       return file.read().strip()
+    with open('./keys/API_Serper.txt', 'r') as file:
+        return file.read().strip()
 
 # Configuração das chaves de API
 groq_api_key = get_groq_api_key()
@@ -71,7 +71,8 @@ urls = [
     "https://informacoes.anatel.gov.br/legislacao/atos-de-certificacao-de-produtos/2020/1493-ato-7280",
     "https://www.gov.br/anatel/pt-br/regulado/numeracao/regulamentacao",
     "https://opfibra.com.br/anatel/conheca-as-principais-normas-da-anatel/",
-    "https://informacoes.anatel.gov.br/legislacao/atos-de-certificacao-de-produtos/2020/1493-ato-7280"
+    "https://informacoes.anatel.gov.br/legislacao/atos-de-certificacao-de-produtos/2020/1493-ato-7280",
+    "https://www.gov.br/anatel/pt-br/consumidor/perguntas-frequentes"
 ]
 agent_context = scrape_websites(urls)
 # Pdfs para coleta de contexto
@@ -105,8 +106,31 @@ agents = [
 
 # Função para classificar o problema
 def classificar_problema(texto):
-    palavras_tecnicas = ["sinal", "instalação", "configuração", "conexão", "equipamento", "caindo", "reparo", "conexao", "cair","fraco", "conecta", "falha", "caido", "falhado"]
-    palavras_juridicas = ["contrato", "reembolso", "cancelamento", "fatura", "dívida", "regulamento", "lei", "comunicado", "pagamento", "divida"]
+    palavras_tecnicas = [
+        "sinal", "instalação", "configuração", "conexão", "equipamento",
+        "caindo", "reparo", "conexao", "cair", "fraco", "conecta",
+        "falha", "caido", "falhado", "wifi", "wi-fi", "falhando",
+        "instalacao", "cabo", "fibra", "otica", "optica", "internet",
+        "instabilidade", "roteador", "configurar", "mensagem", "texto",
+        "dispositivo", "dispositivos", "modem", "suporte", "velocidade",
+        "interferencias", "interferências", "manutenção", "manutencao",
+        "erro", "bug", "sistema", "rede", "hardware", "repetidores",
+        "software", "ataualização", "atualizacao", "incompatiblidade",
+        "incompativel", "desempenho", "backup", "recuperação", "recuperacao",
+        "diagnostico", "diagnóstico", "solução", "solucao"
+    ]
+    palavras_juridicas = [
+        "contrato", "reembolso", "cancelamento", "fatura", "dívida",
+        "regulamento", "lei", "comunicado", "pagamento", "divida",
+        "direito", "multa", "consumidor", "direitos", "portabilidade",
+        "transferencia", "operadora", "número", "numero", "cobrado",
+        "cobrança", "cobranca", "taxa", "preço", "preco", "valor", "suporte",
+        "dinheiro", "reclamacao", "reclamação", "prazo", "prazos", "contratada",
+        "contratei", "cobrar", "provedor", "provedora", "licença", "licenca",
+        "regulamentação", "regulamentacao", "regulação", "regulacao", "regulamento",
+        "homologar", "homologação", "homologacao", "processo" "procedencia", "procedência",
+        "normas", "monitorar", "deveres", "recursos", "mediação", "mediacao", "constitucional"
+    ]
     tecnico_score = sum(1 for palavra in palavras_tecnicas if palavra in texto.lower())
     juridico_score = sum(1 for palavra in palavras_juridicas if palavra in texto.lower())
     if tecnico_score > juridico_score:
@@ -117,7 +141,7 @@ def classificar_problema(texto):
         return "indefinido"
 
 # Função para processar a pergunta e redirecionar ao agente correto
-def processar_pergunta(question, conversation_history):
+def processar_pergunta(question, conversation_history, agente_atual):
     tipo_problema = classificar_problema(question)
     
     if tipo_problema == "tecnico":
@@ -127,8 +151,8 @@ def processar_pergunta(question, conversation_history):
         agente_destino = agents[1]  # Agente Julio
         print("Redirecionando para Julio (Suporte Jurídico).")
     else:
-        agente_destino = agents[0]  # Eduardo permanece como o agente padrão
-        print("Problema indefinido. Mantendo com Eduardo para nova triagem.")
+        agente_destino = agente_atual  # Manter o agente atual
+        print("Problema indefinido. Mantendo com", agente_destino.name, "para nova triagem.")
     
     # Adicionar a pergunta ao histórico
     conversation_history.append({"role": "user", "content": question})
@@ -147,10 +171,16 @@ def processar_pergunta(question, conversation_history):
     conversation_history.append({"role": "assistant", "content": response})
 
     print(f"{agente_destino.name}: {response}")
+    
+    return agente_destino  # Retorna o agente atual
 
 # Loop principal
+agente_atual = agents[0]  # Começa com o agente Eduardo
+conversation_history = []
+
 while True:
-    question = input("Insira a sua pergunta (ou digite sair para sair): ")
+    question = input("Insira a sua pergunta (ou digite sair para falar com o Eduardo): ")
     if question.lower() == 'sair':
-        break
-    processar_pergunta(question, conversation_history=[])
+            agente_atual = processar_pergunta(question, conversation_history, agents[0])
+
+    agente_atual = processar_pergunta(question, conversation_history, agente_atual)
