@@ -5,23 +5,16 @@ from groq import Groq
 from langchain_openai import ChatOpenAI
 import requests
 from bs4 import BeautifulSoup
-import config
 import tkinter as tk
 from tkinter import scrolledtext
-
-# Funções para carregar as chaves de API
-
-def get_groq_api_key():
-    return config.Groq_api_key
-
-def get_serper_api_key():
-    return config.Serper_api_key
+from dotenv import load_dotenv
 
 # Configuração das chaves de API
-groq_api_key = get_groq_api_key()
-serper_api_key = get_serper_api_key()
-os.environ["GROQ_API_KEY"] = groq_api_key
-os.environ["SERPER_API_KEY"] = serper_api_key
+load_dotenv()
+
+openai_api_key = os.getenv("LLM_API_KEY")
+groq_api_key = os.getenv("GROQ_API_KEY")
+serper_api_key = os.getenv("SERPER_API_KEY")
 
 # Função para coletar conteúdo de várias URLs
 def scrape_websites(urls):
