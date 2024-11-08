@@ -6,6 +6,8 @@ from langchain_openai import ChatOpenAI
 import requests
 from bs4 import BeautifulSoup
 import config
+import tkinter as tk
+from tkinter import scrolledtext
 
 # Funções para carregar as chaves de API
 def get_openai_api_key():
@@ -172,6 +174,82 @@ def processar_pergunta(question, conversation_history, agente_atual):
     
     return agente_destino  # Retorna o agente atual
 
+# Função para processar a pergunta e redirecionar ao agente correto
+def processar_pergunta_interface(question, conversation_history, agente_atual):
+    tipo_problema = classificar_problema(question)
+    
+    if tipo_problema == "tecnico":
+        agente_destino = agents[2]  # Agente Marcia
+        print("Redirecionando para Marcia (Suporte Técnico).")
+    elif tipo_problema == "juridico":
+        agente_destino = agents[1]  # Agente Julio
+        print("Redirecionando para Julio (Suporte Jurídico).")
+    else:
+        agente_destino = agente_atual  # Manter o agente atual
+        print("Problema indefinido. Mantendo com", agente_destino.name, "para nova triagem.")
+    
+    # Adicionar a pergunta ao histórico
+    conversation_history.append({"role": "user", "content": question})
+    
+    # Criar a mensagem de contexto
+    system_message = {
+        "role": "system",
+        "content": f"Você é {agente_destino.name}, {agente_destino.personality}. Context: {agente_destino.context}. Goal: {agente_destino.goal}. Backstory: {agente_destino.backstory}."
+    }
+    
+    # Formatar as mensagens e gerar a resposta
+    messages = [system_message] + conversation_history
+    response = agente_destino.generate_response(messages)
+
+    # Adicionar a resposta ao histórico
+    conversation_history.append({"role": "assistant", "content": response})
+
+    print(f"{agente_destino.name}: {response}")
+    
+    return agente_destino, response  # Retorna o agente atual e a resposta gerada
+
+# Função para enviar a pergunta e mostrar a resposta na interface
+def enviar_pergunta():
+    pergunta = entry.get()  # Captura a pergunta do campo de entrada
+    if pergunta.strip() == "":
+        return
+    
+    # Atualiza o histórico de conversa e processa a pergunta
+    global agente_atual, conversation_history
+    agente_atual, resposta = processar_pergunta_interface(pergunta, conversation_history, agente_atual)
+    
+    # Exibe a pergunta e a resposta na área de mensagens
+    chat_display.config(state=tk.NORMAL)
+    chat_display.insert(tk.END, f"Você: {pergunta}\n")
+    chat_display.insert(tk.END, f"{agente_atual.name}: {resposta}\n\n")
+    chat_display.config(state=tk.DISABLED)
+    
+    # Limpa o campo de entrada
+    entry.delete(0, tk.END)
+
+# Criação da interface com Tkinter
+root = tk.Tk()
+root.title("Chatbot ANATEL")
+
+# Configuração do campo de exibição de mensagens
+chat_display = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=60, height=20, state=tk.DISABLED)
+chat_display.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+
+# Campo de entrada de perguntas
+entry = tk.Entry(root, width=50)
+entry.grid(row=1, column=0, padx=10, pady=10)
+
+# Botão para enviar pergunta
+send_button = tk.Button(root, text="Enviar", command=enviar_pergunta)
+send_button.grid(row=1, column=1, padx=10, pady=10)
+
+# Inicialização do agente e histórico de conversa
+agente_atual = agents[0]  # Começa com o agente Eduardo
+conversation_history = []
+
+# Inicia a interface
+root.mainloop()
+
 # Loop principal
 agente_atual = agents[0]  # Começa com o agente Eduardo
 conversation_history = []
@@ -182,3 +260,4 @@ while True:
             agente_atual = processar_pergunta(question, conversation_history, agents[0])
 
     agente_atual = processar_pergunta(question, conversation_history, agente_atual)
+
