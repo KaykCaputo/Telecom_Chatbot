@@ -10,6 +10,8 @@ import tkinter as tk
 from tkinter import scrolledtext
 
 # Funções para carregar as chaves de API
+def get_openai_api_key():
+    return config.LLM_api_key
 
 def get_groq_api_key():
     return config.Groq_api_key
@@ -20,8 +22,13 @@ def get_serper_api_key():
 # Configuração das chaves de API
 groq_api_key = get_groq_api_key()
 serper_api_key = get_serper_api_key()
+openai_api_key = get_openai_api_key()
 os.environ["GROQ_API_KEY"] = groq_api_key
 os.environ["SERPER_API_KEY"] = serper_api_key
+os.environ["OPENAI_API_KEY"] = openai_api_key
+
+# Inicializa o modelo do OpenAI
+gpt4o_mini_llm = ChatOpenAI(model="gpt-4o-mini", api_key=openai_api_key)
 
 # Função para coletar conteúdo de várias URLs
 def scrape_websites(urls):
