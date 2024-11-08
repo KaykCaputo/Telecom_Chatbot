@@ -1,3 +1,2 @@
 Groq_api_key = "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"
-LLM_api_key = "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"
 Serper_api_key = "84634be3833c05a62cbf1e4cee3f3f4de642d41e"
