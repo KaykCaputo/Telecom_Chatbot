@@ -5,19 +5,17 @@ from groq import Groq
 from langchain_openai import ChatOpenAI
 import requests
 from bs4 import BeautifulSoup
+import config
 
 # Funções para carregar as chaves de API
 def get_openai_api_key():
-    with open('./keys/API_LLM_OpenAI.txt', 'r') as file:
-        return file.read().strip()
+    return config.LLM_api_key
 
 def get_groq_api_key():
-    with open('./keys/API_Groq.txt', 'r') as file:
-        return file.read().strip()
+    return config.Groq_api_key
 
 def get_serper_api_key():
-    with open('./keys/API_Serper.txt', 'r') as file:
-        return file.read().strip()
+    return config.Serper_api_key
 
 # Configuração das chaves de API
 groq_api_key = get_groq_api_key()
