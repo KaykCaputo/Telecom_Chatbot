@@ -209,7 +209,7 @@ def processar_pergunta_interface(question, conversation_history, agente_atual):
     return agente_destino, response  # Retorna o agente atual e a resposta gerada
 
 # Função para enviar a pergunta e mostrar a resposta na interface
-def enviar_pergunta():
+def enviar_pergunta(event=None):
     pergunta = entry.get()  # Captura a pergunta do campo de entrada
     if pergunta.strip() == "":
         return
@@ -242,6 +242,8 @@ entry.grid(row=1, column=0, padx=10, pady=10)
 # Botão para enviar pergunta
 send_button = tk.Button(root, text="Enviar", command=enviar_pergunta)
 send_button.grid(row=1, column=1, padx=10, pady=10)
+
+entry.bind("<Return>", enviar_pergunta)
 
 # Inicialização do agente e histórico de conversa
 agente_atual = agents[0]  # Começa com o agente Eduardo
