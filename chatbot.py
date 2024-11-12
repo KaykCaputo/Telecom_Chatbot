@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 import config
 import tkinter as tk
+from tkinter import ttk
 from tkinter import scrolledtext
 
 # Funções para carregar as chaves de API
@@ -220,9 +221,11 @@ def enviar_pergunta(event=None):
     
     # Exibe a pergunta e a resposta na área de mensagens
     chat_display.config(state=tk.NORMAL)
-    chat_display.insert(tk.END, f"Você: {pergunta}\n")
-    chat_display.insert(tk.END, f"{agente_atual.name}: {resposta}\n\n")
+    chat_display.tag_config('color', bg='#99aab5', fg='#ffffff')
+    chat_display.insert(tk.END, f"Você: {pergunta}\n", 'color')
+    chat_display.insert(tk.END, f"{agente_atual.name}: {resposta}\n\n", 'color')
     chat_display.config(state=tk.DISABLED)
+
     
     # Limpa o campo de entrada
     entry.delete(0, tk.END)
@@ -230,6 +233,11 @@ def enviar_pergunta(event=None):
 # Criação da interface com Tkinter
 root = tk.Tk()
 root.title("Chatbot ANATEL")
+root.configure(bg='#2c2f33')
+root.geometry("640x360")
+frame = tk.Frame(root, bg='#23272a')
+frame.place(relwidth=1, relheight=1)
+
 
 # Configuração do campo de exibição de mensagens
 chat_display = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=60, height=20, state=tk.DISABLED)
