@@ -130,7 +130,8 @@ def classificar_problema(texto):
         "contratei", "cobrar", "provedor", "provedora", "licença", "licenca",
         "regulamentação", "regulamentacao", "regulação", "regulacao", "regulamento",
         "homologar", "homologação", "homologacao", "processo" "procedencia", "procedência",
-        "normas", "monitorar", "deveres", "recursos", "mediação", "mediacao", "constitucional"
+        "normas", "monitorar", "deveres", "recursos", "mediação", "mediacao", "constitucional",
+        "suspensão", "suspensao", "servico", "serviço"
     ]
     tecnico_score = sum(1 for palavra in palavras_tecnicas if palavra in texto.lower())
     juridico_score = sum(1 for palavra in palavras_juridicas if palavra in texto.lower())
