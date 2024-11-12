@@ -221,7 +221,6 @@ def enviar_pergunta(event=None):
     
     # Exibe a pergunta e a resposta na área de mensagens
     chat_display.config(state=tk.NORMAL)
-    chat_display.tag_config('color', bg='#99aab5', fg='#ffffff')
     chat_display.insert(tk.END, f"Você: {pergunta}\n", 'color')
     chat_display.insert(tk.END, f"{agente_atual.name}: {resposta}\n\n", 'color')
     chat_display.config(state=tk.DISABLED)
@@ -234,9 +233,12 @@ def enviar_pergunta(event=None):
 root = tk.Tk()
 root.title("Chatbot ANATEL")
 root.configure(bg='#2c2f33')
-root.geometry("640x360")
+root.geometry("600x600")
+txt = tk.Text(root)
+txt.pack()
 frame = tk.Frame(root, bg='#23272a')
 frame.place(relwidth=1, relheight=1)
+txt.tag_config('color', bg='#99aab5', fg='#ffffff')
 
 
 # Configuração do campo de exibição de mensagens
@@ -245,7 +247,7 @@ chat_display.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
 
 # Campo de entrada de perguntas
 entry = tk.Entry(root, width=50)
-entry.grid(row=1, column=0, padx=10, pady=10)
+entry.grid(row=1, column=0, padx=20, pady=15)
 
 # Botão para enviar pergunta
 send_button = tk.Button(root, text="Enviar", command=enviar_pergunta)
