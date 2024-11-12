@@ -233,21 +233,19 @@ def enviar_pergunta(event=None):
 root = tk.Tk()
 root.title("Chatbot ANATEL")
 root.configure(bg='#2c2f33')
-root.geometry("600x600")
-txt = tk.Text(root)
-txt.pack()
+root.geometry("960x640")
+root.minsize(960, 640)
 frame = tk.Frame(root, bg='#23272a')
 frame.place(relwidth=1, relheight=1)
-txt.tag_config('color', bg='#99aab5', fg='#ffffff')
 
 
 # Configuração do campo de exibição de mensagens
-chat_display = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=60, height=20, state=tk.DISABLED)
+chat_display = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=80, height=30, state=tk.DISABLED, background='#99aab5', foreground='#ffffff')
 chat_display.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
 
 # Campo de entrada de perguntas
-entry = tk.Entry(root, width=50)
-entry.grid(row=1, column=0, padx=20, pady=15)
+entry = tk.Entry(root, width=80)
+entry.grid(row=1, column=0, padx=10, pady=10)
 
 # Botão para enviar pergunta
 send_button = tk.Button(root, text="Enviar", command=enviar_pergunta)
