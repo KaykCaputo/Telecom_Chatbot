@@ -43,22 +43,22 @@ def scrape_websites(urls):
 
 # Classe de agente
 class Agent:
-    def __init__(self, name, personality, context, goal, backstory):
+    def __init__(self, name, personality, context, goal, backstory, openai_api_key):
         self.name = name
         self.personality = personality
         self.context = context
         self.goal = goal
         self.backstory = backstory
+        self.client = ChatOpenAI(model="gpt-4o-mini", api_key=openai_api_key)  # Cliente ChatOpenAI instanciado
 
-     def generate_response(self, messages):
+    def generate_response(self, messages):
+        # Estrutura de mensagens deve ser convertida corretamente para o formato esperado
         formatted_messages = [{"role": msg["role"], "content": msg["content"]} for msg in messages]
         
-        response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",
-            messages=formatted_messages
-        )
-        
-        return response['choices'][0]['message']['content'] 
+        # Chama o modelo para gerar a resposta
+        response = self.client(messages=formatted_messages)  # Invocando diretamente o cliente, sem o uso de .chat
+
+        return response['choices'][0]['message']['content']  # Retorna o conteúdo da resposta
 # URLs para coleta de contexto
 urls = [
     "https://www.gov.br/anatel/pt-br/consumidor/conheca-seus-direitos/banda-larga",
