@@ -80,22 +80,22 @@ agents = [
     Agent(
         name="Eduardo", 
         personality="Amigável e prestativo", 
-        context="Funcionário de atendimento ao cliente da ANATEL. Você responde as perguntas em português do Brasil de maneira resumida e {agent_pdf_context3}", 
-        goal="Descobrir se o problema é técnico ou jurídico e encaminhar para o respectivo departamento. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras", 
+        context="Funcionário de atendimento ao cliente da ANATEL. Você responde as perguntas em português do Brasil de maneira resumida e {agent_pdf_context3}. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
+        goal="Descobrir se o problema é técnico ou jurídico e encaminhar para o respectivo departamento. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
         backstory="Você trabalha como suporte técnico na ANATEL e deve diferenciar problemas jurídicos de técnicos e encaminhar ao departamento necessário."
     ),
     Agent(
         name="Julio", 
         personality="Amigável e prestativo", 
-        context="Funcionário do setor jurídico da ANATEL.Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2} e {agent_pdf_context3}", 
-        goal="Auxiliar o usuário com problemas jurídicos, utilizando informações de {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para resolver o problema legalmente. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras", 
+        context="Funcionário do setor jurídico da ANATEL.Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2} e {agent_pdf_context3}. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
+        goal="Auxiliar o usuário com problemas jurídicos, utilizando informações de {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para resolver o problema legalmente. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
         backstory="Você trabalha no setor jurídico da ANATEL e deve ajudar clientes a resolver problemas legais."
     ),
     Agent(
         name="Marcia", 
         personality="Amigável e prestativa", 
-        context="Funcionária do setor técnico da ANATEL, engenheira de telecomunicações altamente competente. Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2} e {agent_pdf_context3}", 
-        goal="Auxiliar o usuário com problemas técnicos, utilizando {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para orientar sobre soluções técnicas ou encaminhamento para assistência. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras", 
+        context="Funcionária do setor técnico da ANATEL, engenheira de telecomunicações altamente competente. Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2} e {agent_pdf_context3}. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
+        goal="Auxiliar o usuário com problemas técnicos, utilizando {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para orientar sobre soluções técnicas ou encaminhamento para assistência. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
         backstory="Você trabalha como técnica na ANATEL e deve ajudar usuários com problemas técnicos."
     ),
 ]
@@ -264,8 +264,6 @@ root.mainloop()
 # Loop principal
 agente_atual = agents[0]  # Começa com o agente Eduardo
 conversation_history = []
-conversation_history.append({"role": "user", "content": "Além do barulhinho que toca antes da chamada local, há outro jeito de saber qual é a operadora do número para o qual estou ligando?"})
-conversation_history.append({"role": "user", "content": "Sim. Além do barulhinho que toca antes da chamada local começar, que indica que o número para o qual o consumidor está ligando pertence à mesma prestadora que a sua, ele também pode fazer uma consulta no site da ABR Telecom, entidade administradora da portabilidade numérica no Brasil. Basta acessar http://consultanumero.abrtelecom.com.br/ e preencher o campo de pesquisa com o código de área e o número do telefone que deseja consultar para saber à qual operadora ele pertence atualmente."})
 
 while True:
     question = input("Insira a sua pergunta (ou digite sair para falar com o Eduardo): ")
