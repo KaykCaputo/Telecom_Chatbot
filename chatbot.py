@@ -171,7 +171,12 @@ def processar_pergunta(question, conversation_history, agente_atual):
     
     # Formatar as mensagens e gerar a resposta
     messages = [system_message] + conversation_history
-    response = agente_destino.generate_response(messages)
+    response = agente_destino.client.generate_response(
+        messages=[
+            {"role": "system", "content": agente.context},
+            {"role": "user", "content": question}
+        ]
+    )
 
     # Adicionar a resposta ao histórico
     conversation_history.append({"role": "assistant", "content": response})
