@@ -257,13 +257,12 @@ send_button.grid(row=1, column=1, padx=10, pady=10)
 
 entry.bind("<Return>", enviar_pergunta)
 
+# Loop principal
+agente_atual = agents[0]  # Começa com o agente Eduardo
 conversation_history = []
 # Inicia a interface
 root.mainloop()
 
-# Loop principal
-agente_atual = agents[0]  # Começa com o agente Eduardo
-conversation_history = []
 
 while True:
     question = input("Insira a sua pergunta (ou digite sair para falar com o Eduardo): ")
