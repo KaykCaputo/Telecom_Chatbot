@@ -50,10 +50,15 @@ class Agent:
         self.goal = goal
         self.backstory = backstory
 
-    def generate_response(self, messages):
+     def generate_response(self, messages):
         formatted_messages = [{"role": msg["role"], "content": msg["content"]} for msg in messages]
-        return client.chat.completions.create(messages=formatted_messages, model="gpt4o_mini_llm").choices[0].message.content
-
+        
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini",
+            messages=formatted_messages
+        )
+        
+        return response['choices'][0]['message']['content'] 
 # URLs para coleta de contexto
 urls = [
     "https://www.gov.br/anatel/pt-br/consumidor/conheca-seus-direitos/banda-larga",
