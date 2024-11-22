@@ -257,7 +257,7 @@ send_button.grid(row=1, column=1, padx=10, pady=10)
 
 entry.bind("<Return>", enviar_pergunta)
 
-
+conversation_history = []
 # Inicia a interface
 root.mainloop()
 
