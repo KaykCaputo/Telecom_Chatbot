@@ -116,9 +116,11 @@ def classificar_problema(texto):
         "dispositivo", "dispositivos", "modem", "suporte", "velocidade",
         "interferencias", "interferências", "manutenção", "manutencao",
         "erro", "bug", "sistema", "rede", "hardware", "repetidores",
-        "software", "ataualização", "atualizacao", "incompatiblidade",
+        "software", "atualização", "atualizacao", "incompatiblidade",
         "incompativel", "desempenho", "backup", "recuperação", "recuperacao",
-        "diagnostico", "diagnóstico", "solução", "solucao"
+        "diagnostico", "diagnóstico", "solução", "solucao", "wireless", "remoto",
+        "assistencia", "assistência", "manual", "guias", "guia", "reparação", "reparacao",
+        "firmware", "incompatiblidade", "backup", "vpn", "ip", "dns"
     ]
     palavras_juridicas = [
         "contrato", "reembolso", "cancelamento", "fatura", "dívida",
@@ -131,7 +133,8 @@ def classificar_problema(texto):
         "regulamentação", "regulamentacao", "regulação", "regulacao", "regulamento",
         "homologar", "homologação", "homologacao", "processo" "procedencia", "procedência",
         "normas", "monitorar", "deveres", "recursos", "mediação", "mediacao", "constitucional",
-        "suspensão", "suspensao", "servico", "serviço"
+        "suspensão", "suspensao", "servico", "serviço", "contestacao", "contestação", "contestaçao",
+        "credito", "crédito", "prestadora", "franquia", "consumo", "telefonica", "telefÔnica"
     ]
     tecnico_score = sum(1 for palavra in palavras_tecnicas if palavra in texto.lower())
     juridico_score = sum(1 for palavra in palavras_juridicas if palavra in texto.lower())
