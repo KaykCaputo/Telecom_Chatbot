@@ -77,9 +77,9 @@ urls = [
 ]
 agent_context = scrape_websites(urls)
 # Pdfs para coleta de contexto
-agent_pdf_context = PDFSearchTool("./data/apostilatele2.pdf")
-agent_pdf_context2 = PDFSearchTool("./data/apostilatele.pdf")
-agent_pdf_context3 = PDFSearchTool("./data/Pergunas-Frequentes.pdf")
+agent_pdf_context = PDFSearchTool("./data/apostilatele2.pdf").extract_text()
+agent_pdf_context2 = PDFSearchTool("./data/apostilatele.pdf").extract_text()
+agent_pdf_context3 = PDFSearchTool("./data/Pergunas-Frequentes.pdf").extract_text()
 
 # Criação dos agentes
 agents = [
@@ -87,21 +87,21 @@ agents = [
         name="Eduardo", 
         personality="Amigável e prestativo", 
         context="Funcionário de atendimento ao cliente da ANATEL. Você responde as perguntas em português do Brasil de maneira resumida e {agent_pdf_context3}", 
-        goal="Descobrir se o problema é técnico ou jurídico e encaminhar para o respectivo departamento. Você responde as perguntas em português do Brasil de maneira resumida", 
+        goal="Descobrir se o problema é técnico ou jurídico e encaminhar para o respectivo departamento. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras", 
         backstory="Você trabalha como suporte técnico na ANATEL e deve diferenciar problemas jurídicos de técnicos e encaminhar ao departamento necessário."
     ),
     Agent(
         name="Julio", 
         personality="Amigável e prestativo", 
         context="Funcionário do setor jurídico da ANATEL.Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2} e {agent_pdf_context3}", 
-        goal="Auxiliar o usuário com problemas jurídicos, utilizando informações de {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para resolver o problema legalmente. Você responde as perguntas em português do Brasil de maneira resumida", 
+        goal="Auxiliar o usuário com problemas jurídicos, utilizando informações de {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para resolver o problema legalmente. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras", 
         backstory="Você trabalha no setor jurídico da ANATEL e deve ajudar clientes a resolver problemas legais."
     ),
     Agent(
         name="Marcia", 
         personality="Amigável e prestativa", 
         context="Funcionária do setor técnico da ANATEL, engenheira de telecomunicações altamente competente. Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2} e {agent_pdf_context3}", 
-        goal="Auxiliar o usuário com problemas técnicos, utilizando {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para orientar sobre soluções técnicas ou encaminhamento para assistência. Você responde as perguntas em português do Brasil de maneira resumida", 
+        goal="Auxiliar o usuário com problemas técnicos, utilizando {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para orientar sobre soluções técnicas ou encaminhamento para assistência. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras", 
         backstory="Você trabalha como técnica na ANATEL e deve ajudar usuários com problemas técnicos."
     ),
 ]
