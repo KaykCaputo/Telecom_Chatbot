@@ -73,7 +73,7 @@ agent_context = scrape_websites(urls)
 # Pdfs para coleta de contexto
 agent_pdf_context = PDFSearchTool("./data/apostilatele2.pdf")
 agent_pdf_context2 = PDFSearchTool("./data/apostilatele.pdf")
-agent_pdf_context3 = PDFSearchTool("./data/Pergunas-Frequentes.pdf")
+agent_pdf_context3 = PDFSearchTool("./data/perguntasFrequentes.pdf")
 
 # Criação dos agentes
 agents = [
