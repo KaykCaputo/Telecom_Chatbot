@@ -38,7 +38,7 @@ def scrape_websites(urls):
         try:
             response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
-            content = ' '.join([p.get_text() for p in soup.find_all('p')])
+            content = ' '.join([p.get_text() for p in soup.find_all(['p', 'li', 'a', 'ul', 'div'])])
             all_content.append(content)
         except Exception as e:
             print(f"Erro ao acessar {url}: {e}")
@@ -86,21 +86,21 @@ agents = [
         name="Eduardo", 
         personality="Amigável e prestativo", 
         context="Funcionário de atendimento ao cliente da ANATEL. Você responde as perguntas em português do Brasil", 
-        goal="Descobrir se o problema é técnico ou jurídico e encaminhar para o respectivo departamento. Você responde as perguntas em português do Brasil", 
+        goal="Descobrir se o problema é técnico ou jurídico e encaminhar para o respectivo departamento. Você responde as perguntas em português do Brasil de maneira resumida", 
         backstory="Você trabalha como suporte técnico na ANATEL e deve diferenciar problemas jurídicos de técnicos e encaminhar ao departamento necessário."
     ),
     Agent(
         name="Julio", 
         personality="Amigável e prestativo", 
         context="Funcionário do setor jurídico da ANATEL.Você responde as perguntas em português do Brasil Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2}", 
-        goal="Auxiliar o usuário com problemas jurídicos, utilizando informações de {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para resolver o problema legalmente. Você responde as perguntas em português do Brasil", 
+        goal="Auxiliar o usuário com problemas jurídicos, utilizando informações de {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para resolver o problema legalmente. Você responde as perguntas em português do Brasil de maneira resumida", 
         backstory="Você trabalha no setor jurídico da ANATEL e deve ajudar clientes a resolver problemas legais."
     ),
     Agent(
         name="Marcia", 
         personality="Amigável e prestativa", 
         context="Funcionária do setor técnico da ANATEL, engenheira de telecomunicações altamente competente. Você responde as perguntas em português do Brasil Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2}", 
-        goal="Auxiliar o usuário com problemas técnicos, utilizando {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para orientar sobre soluções técnicas ou encaminhamento para assistência. Você responde as perguntas em português do Brasil", 
+        goal="Auxiliar o usuário com problemas técnicos, utilizando {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para orientar sobre soluções técnicas ou encaminhamento para assistência. Você responde as perguntas em português do Brasil de maneira resumida", 
         backstory="Você trabalha como técnica na ANATEL e deve ajudar usuários com problemas técnicos."
     ),
 ]
