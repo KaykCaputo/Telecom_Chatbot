@@ -12,7 +12,7 @@ from tkinter import scrolledtext
 
 # Funções para carregar as chaves de API
 def get_openai_api_key():
-    return config.LLM_api_key
+    return config.gpt_api_key
 
 def get_groq_api_key():
     return config.Groq_api_key
@@ -29,7 +29,7 @@ os.environ["SERPER_API_KEY"] = serper_api_key
 os.environ["OPENAI_API_KEY"] = openai_api_key
 
 # Inicializa o modelo do OpenAI
-gpt4o_mini_llm = ChatOpenAI(model="gpt-4o-mini", api_key=openai_api_key)
+client = ChatOpenAI(model="gpt-4o-mini", api_key=openai_api_key)
 
 # Função para coletar conteúdo de várias URLs
 def scrape_websites(urls):
@@ -45,7 +45,7 @@ def scrape_websites(urls):
     return ' '.join(all_content)
 
 # Inicializa o cliente Groq
-client = Groq(api_key=groq_api_key)
+# client = Groq(api_key=groq_api_key)
 
 # Classe de agente
 class Agent:
@@ -58,7 +58,7 @@ class Agent:
 
     def generate_response(self, messages):
         formatted_messages = [{"role": msg["role"], "content": msg["content"]} for msg in messages]
-        return client.chat.completions.create(messages=formatted_messages, model="llama3-8b-8192").choices[0].message.content
+        return client.chat.completions.create(messages=formatted_messages, model="gpt4o_mini_llm").choices[0].message.content
 
 # URLs para coleta de contexto
 urls = [
