@@ -1,11 +1,13 @@
 import os
 from crewai_tools import tool, SerperDevTool, ScrapeWebsiteTool, WebsiteSearchTool, FileReadTool, PDFSearchTool
 from crewai import Agent, Task, Crew, Process
-from langchain.chat_models import ChatOpenAI  # Importando o modelo correto
+from groq import Groq
+from langchain_openai import ChatOpenAI
 import requests
 from bs4 import BeautifulSoup
 import config
 import tkinter as tk
+from tkinter import ttk
 from tkinter import scrolledtext
 
 # Funções para carregar as chaves de API
@@ -54,10 +56,9 @@ class Agent:
         formatted_messages = [{"role": msg["role"], "content": msg["content"]} for msg in messages]
         
         # Chama o modelo para gerar a resposta
-        response = self.client.call(messages=formatted_messages)  # Use o método correto para gerar a resposta
+        response = self.client(messages=formatted_messages)  # Invocando diretamente o cliente, sem o uso de .chat
 
         return response['choices'][0]['message']['content']  # Retorna o conteúdo da resposta
-
 # URLs para coleta de contexto
 urls = [
     "https://www.gov.br/anatel/pt-br/consumidor/conheca-seus-direitos/banda-larga",
@@ -74,27 +75,69 @@ urls = [
     "https://www.gov.br/anatel/pt-br/consumidor/perguntas-frequentes"
 ]
 agent_context = scrape_websites(urls)
+# Pdfs para coleta de contexto
+agent_pdf_context = PDFSearchTool("./data/apostilatele2.pdf")
+agent_pdf_context2 = PDFSearchTool("./data/apostilatele.pdf")
+agent_pdf_context3 = PDFSearchTool("./data/perguntasFrequentes.pdf")
 
 # Criação dos agentes
 agents = [
     Agent(
         name="Eduardo", 
         personality="Amigável e prestativo", 
-        context="Funcionário de atendimento ao cliente da ANATEL. Você responde as perguntas em português do Brasil de maneira resumida.",
-        goal="Descobrir se o problema é técnico ou jurídico e encaminhar para o respectivo departamento.",
-        backstory="Você trabalha como suporte técnico na ANATEL.",
+        context="Funcionário de atendimento ao cliente da ANATEL. Você responde as perguntas em português do Brasil de maneira resumida e {agent_pdf_context3}. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
+        goal="Descobrir se o problema é técnico ou jurídico e encaminhar para o respectivo departamento. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
+        backstory="Você trabalha como suporte técnico na ANATEL e deve diferenciar problemas jurídicos de técnicos e encaminhar ao departamento necessário.",
         openai_api_key=openai_api_key 
     ),
-    # Outros agentes seguem o mesmo padrão...
+    Agent(
+        name="Julio", 
+        personality="Amigável e prestativo", 
+        context="Funcionário do setor jurídico da ANATEL.Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2} e {agent_pdf_context3}. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
+        goal="Auxiliar o usuário com problemas jurídicos, utilizando informações de {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para resolver o problema legalmente. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
+        backstory="Você trabalha no setor jurídico da ANATEL e deve ajudar clientes a resolver problemas legais.",
+        openai_api_key=openai_api_key 
+    ),
+    Agent(
+        name="Marcia", 
+        personality="Amigável e prestativa", 
+        context="Funcionária do setor técnico da ANATEL, engenheira de telecomunicações altamente competente. Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2} e {agent_pdf_context3}. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
+        goal="Auxiliar o usuário com problemas técnicos, utilizando {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para orientar sobre soluções técnicas ou encaminhamento para assistência. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}", 
+        backstory="Você trabalha como técnica na ANATEL e deve ajudar usuários com problemas técnicos.",
+        openai_api_key=openai_api_key 
+    ),
 ]
 
 # Função para classificar o problema
 def classificar_problema(texto):
     palavras_tecnicas = [
-        "sinal", "instalação", "configuração", "conexão", "equipamento", "wifi", "modem"
+        "sinal", "instalação", "configuração", "conexão", "equipamento",
+        "caindo", "reparo", "conexao", "cair", "fraco", "conecta",
+        "falha", "caido", "falhado", "wifi", "wi-fi", "falhando",
+        "instalacao", "cabo", "fibra", "otica", "optica", "internet",
+        "instabilidade", "roteador", "configurar", "mensagem", "texto",
+        "dispositivo", "dispositivos", "modem", "suporte", "velocidade",
+        "interferencias", "interferências", "manutenção", "manutencao",
+        "erro", "bug", "sistema", "rede", "hardware", "repetidores",
+        "software", "atualização", "atualizacao", "incompatiblidade",
+        "incompativel", "desempenho", "backup", "recuperação", "recuperacao",
+        "diagnostico", "diagnóstico", "solução", "solucao", "wireless", "remoto",
+        "assistencia", "assistência", "manual", "guias", "guia", "reparação", "reparacao",
+        "firmware", "incompatiblidade", "backup", "vpn", "ip", "dns"
     ]
     palavras_juridicas = [
-        "contrato", "reembolso", "cancelamento", "fatura", "dívida", "regulamento", "lei"
+        "contrato", "reembolso", "cancelamento", "fatura", "dívida",
+        "regulamento", "lei", "comunicado", "pagamento", "divida",
+        "direito", "multa", "consumidor", "direitos", "portabilidade",
+        "transferencia", "operadora", "número", "numero", "cobrado",
+        "cobrança", "cobranca", "taxa", "preço", "preco", "valor", "suporte",
+        "dinheiro", "reclamacao", "reclamação", "prazo", "prazos", "contratada",
+        "contratei", "cobrar", "provedor", "provedora", "licença", "licenca",
+        "regulamentação", "regulamentacao", "regulação", "regulacao", "regulamento",
+        "homologar", "homologação", "homologacao", "processo" "procedencia", "procedência",
+        "normas", "monitorar", "deveres", "recursos", "mediação", "mediacao", "constitucional",
+        "suspensão", "suspensao", "servico", "serviço", "contestacao", "contestação", "contestaçao",
+        "credito", "crédito", "prestadora", "franquia", "consumo", "telefonica", "telefÔnica"
     ]
     tecnico_score = sum(1 for palavra in palavras_tecnicas if palavra in texto.lower())
     juridico_score = sum(1 for palavra in palavras_juridicas if palavra in texto.lower())
@@ -110,10 +153,10 @@ def processar_pergunta(question, conversation_history, agente_atual):
     tipo_problema = classificar_problema(question)
     
     if tipo_problema == "tecnico":
-        agente_destino = agents[0]  # Exemplo: agente Eduardo
-        print("Redirecionando para Eduardo (Suporte Técnico).")
+        agente_destino = agents[2]  # Agente Marcia
+        print("Redirecionando para Marcia (Suporte Técnico).")
     elif tipo_problema == "juridico":
-        agente_destino = agents[1]  # Exemplo: agente Julio
+        agente_destino = agents[1]  # Agente Julio
         print("Redirecionando para Julio (Suporte Jurídico).")
     else:
         agente_destino = agente_atual  # Manter o agente atual
@@ -125,11 +168,51 @@ def processar_pergunta(question, conversation_history, agente_atual):
     # Criar a mensagem de contexto
     system_message = {
         "role": "system",
-        "content": f"Você é {agente_destino.name}, {agente_destino.personality}. Contexto: {agente_destino.context}."
+        "content": f"Você é {agente_destino.name}, {agente_destino.personality}. Context: {agente_destino.context}. Goal: {agente_destino.goal}. Backstory: {agente_destino.backstory}."
     }
     
-    # Gerar a resposta do agente
-    response = agente_destino.generate_response([system_message] + conversation_history)
+    # Formatar as mensagens e gerar a resposta
+    messages = [system_message] + conversation_history
+    response = agente_destino.client.generate_response(
+        messages=[
+            {"role": "system", "content": agente.context},
+            {"role": "user", "content": question}
+        ]
+    )
+
+    # Adicionar a resposta ao histórico
+    conversation_history.append({"role": "assistant", "content": response})
+
+    print(f"{agente_destino.name}: {response}")
+    
+    return agente_destino  # Retorna o agente atual
+
+# Função para processar a pergunta e redirecionar ao agente correto
+def processar_pergunta_interface(question, conversation_history, agente_atual):
+    tipo_problema = classificar_problema(question)
+    
+    if tipo_problema == "tecnico":
+        agente_destino = agents[2]  # Agente Marcia
+        print("Redirecionando para Marcia (Suporte Técnico).")
+    elif tipo_problema == "juridico":
+        agente_destino = agents[1]  # Agente Julio
+        print("Redirecionando para Julio (Suporte Jurídico).")
+    else:
+        agente_destino = agente_atual  # Manter o agente atual
+        print("Problema indefinido. Mantendo com", agente_destino.name, "para nova triagem.")
+    
+    # Adicionar a pergunta ao histórico
+    conversation_history.append({"role": "user", "content": question})
+    
+    # Criar a mensagem de contexto
+    system_message = {
+        "role": "system",
+        "content": f"Você é {agente_destino.name}, {agente_destino.personality}. Context: {agente_destino.context}. Goal: {agente_destino.goal}. Backstory: {agente_destino.backstory}."
+    }
+    
+    # Formatar as mensagens e gerar a resposta
+    messages = [system_message] + conversation_history
+    response = agente_destino.generate_response(messages)
 
     # Adicionar a resposta ao histórico
     conversation_history.append({"role": "assistant", "content": response})
@@ -146,7 +229,7 @@ def enviar_pergunta(event=None):
     
     # Atualiza o histórico de conversa e processa a pergunta
     global agente_atual, conversation_history
-    agente_atual, resposta = processar_pergunta(pergunta, conversation_history, agente_atual)
+    agente_atual, resposta = processar_pergunta_interface(pergunta, conversation_history, agente_atual)
     
     # Exibe a pergunta e a resposta na área de mensagens
     chat_display.config(state=tk.NORMAL)
@@ -187,7 +270,6 @@ agente_atual = agents[0]  # Começa com o agente Eduardo
 conversation_history = []
 # Inicia a interface
 root.mainloop()
-
 
 
 while True:
