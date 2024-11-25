@@ -64,26 +64,13 @@ class Agent:
         # Usar invoke para gerar resposta
         response = self.client.invoke(formatted_messages)
         return response.content
-# URLs para coleta de contexto
-urls = [
-    "https://www.gov.br/anatel/pt-br/consumidor/conheca-seus-direitos/banda-larga",
-    "https://www.gov.br/anatel/pt-br/consumidor/conheca-seus-direitos/telefonia-movel",
-    "https://www.gov.br/anatel/pt-br/consumidor/conheca-seus-direitos/telefonia-fixa",
-    "https://www.gov.br/anatel/pt-br/consumidor/conheca-seus-direitos/tv-por-assinatura",
-    "https://www2.camara.leg.br/legin/fed/lei/1960-1969/lei-4117-27-agosto-1962-353835-publicacaooriginal-22620-pl.html",
-    "https://opfibra.com.br/anatel/conheca-as-principais-normas-da-anatel/",
-    "https://www.teleco.com.br/legis.asp",
-    "https://informacoes.anatel.gov.br/legislacao/atos-de-certificacao-de-produtos/2020/1493-ato-7280",
-    "https://www.gov.br/anatel/pt-br/regulado/numeracao/regulamentacao",
-    "https://opfibra.com.br/anatel/conheca-as-principais-normas-da-anatel/",
-    "https://informacoes.anatel.gov.br/legislacao/atos-de-certificacao-de-produtos/2020/1493-ato-7280",
-    "https://www.gov.br/anatel/pt-br/consumidor/perguntas-frequentes"
-]
-agent_context = scrape_websites(urls)
+
 # Pdfs para coleta de contexto
 agent_pdf_context = PDFSearchTool("./apostilatele2.pdf")
 agent_pdf_context2 = PDFSearchTool("./apostilatele.pdf")
 agent_pdf_context3 = PDFSearchTool("./perguntasFrequentes.pdf")
+agent_pdf_context4 = PDFSearchTool("./lei_normas.pdf")
+agent_pdf_context5 = PDFSearchTool("./telecoLegislaçao.pdf")
 
 # Criação dos agentes
 agents = [
@@ -98,16 +85,16 @@ agents = [
     Agent(
         name="Julio",
         personality="Amigável e prestativo",
-        context="Funcionário do setor jurídico da ANATEL.Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2} e {agent_pdf_context3}. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}",
-        goal="Auxiliar o usuário com problemas jurídicos, utilizando informações de {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para resolver o problema legalmente. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}",
+        context="Funcionário do setor jurídico da ANATEL.Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_pdf_context}, {agent_pdf_context2}, {agent_pdf_context3}, {agent_pdf_context4} e {agent_pdf_context5} . As respostas devem ser semelhantes as respostas no {agent_pdf_context3}",
+        goal="Auxiliar o usuário com problemas jurídicos, utilizando informações de {agent_pdf_context}, {agent_pdf_context2}, {agent_pdf_context4} e {agent_pdf_context5} para resolver o problema legalmente. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}",
         backstory="Você trabalha no setor jurídico da ANATEL e deve ajudar clientes a resolver problemas legais.",
         openai_api_key=openai_api_key
     ),
     Agent(
         name="Marcia",
         personality="Amigável e prestativa",
-        context="Funcionária do setor técnico da ANATEL, engenheira de telecomunicações altamente competente. Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_context}, {agent_pdf_context} e {agent_pdf_context2} e {agent_pdf_context3}. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}",
-        goal="Auxiliar o usuário com problemas técnicos, utilizando {agent_context}, {agent_pdf_context} e {agent_pdf_context2} para orientar sobre soluções técnicas ou encaminhamento para assistência. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}",
+        context="Funcionária do setor técnico da ANATEL, engenheira de telecomunicações altamente competente. Você responde as perguntas em português do Brasil e de maneira resumida. Informações adicionais: {agent_pdf_context} e {agent_pdf_context2} e {agent_pdf_context3}. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}",
+        goal="Auxiliar o usuário com problemas técnicos, utilizando {agent_pdf_context} e {agent_pdf_context2} para orientar sobre soluções técnicas ou encaminhamento para assistência. Você responde as perguntas em português do Brasil de maneira resumida com no maximo 100 palavras. As respostas devem ser semelhantes as respostas no {agent_pdf_context3}",
         backstory="Você trabalha como técnica na ANATEL e deve ajudar usuários com problemas técnicos.",
         openai_api_key=openai_api_key
     ),
