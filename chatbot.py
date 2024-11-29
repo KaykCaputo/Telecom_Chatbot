@@ -7,7 +7,7 @@ from langchain_openai import ChatOpenAI
 from bs4 import BeautifulSoup
 import tkinter as tk
 from tkinter import ttk
-from tkinter import scrolledtext
+from tkinter import Scrollbar
 
 # Funções para carregar as chaves de API
 def get_openai_api_key():
@@ -229,44 +229,94 @@ def enviar_pergunta(event=None):
     global agente_atual, conversation_history
     agente_atual, resposta = processar_pergunta_interface(pergunta, conversation_history, agente_atual)
 
-    # Exibe a pergunta e a resposta na área de mensagens
-    chat_display.config(state=tk.NORMAL)
-    chat_display.insert(tk.END, f"Você: {pergunta}\n", 'color')
-    chat_display.insert(tk.END, f"{agente_atual.name}: {resposta}\n\n", 'color')
-    chat_display.config(state=tk.DISABLED)
-
+    # Adicionar a pergunta e a resposta ao canvas
+    adicionar_mensagem_canvas(f"{pergunta}", "cliente")
+    adicionar_mensagem_canvas(f"{agente_atual.name}: {resposta}", "atendente")
 
     # Limpa o campo de entrada
     entry.delete(0, tk.END)
 
-# Criação da interface com Tkinter
+# Função para adicionar mensagens ao Canvas com espaçamento ajustado
+def adicionar_mensagem_canvas(texto, tipo):
+    global y_offset
+
+    # Determina a posição e estilo
+    if tipo == "cliente":
+        bg = "#7289da"  # Azul para cliente
+        fg = "white"
+        anchor = "e"  # Alinha à direita
+        padx = (540, 10)  # Margem maior na esquerda
+    else:
+        bg = "#43b581"  # Verde para atendente
+        fg = "white"
+        anchor = "w"  # Alinha à esquerda
+        padx = (10, 555)  # Margem maior na direita
+        
+    largura_maxima = 400  # Defina a largura máxima que a mensagem pode ocupar
+    wraplength = largura_maxima - 20  # Um pouco de margem para não colar na borda
+    
+    # Cria um Frame para encapsular a mensagem
+    msg_frame = tk.Frame(messages_frame, bg="#2c2f33")
+    msg_frame.pack(fill=tk.X, pady=5)
+
+    # Cria o Label para a mensagem
+    label = tk.Label(
+        msg_frame,
+        text=texto,
+        bg=bg,
+        fg=fg,
+        wraplength=wraplength,  # Limita a largura do texto
+        justify="left",
+        font=("Arial", 10),
+        padx=5,
+        pady=5,
+    )
+    label.pack(anchor=anchor, padx=padx)
+
+    # Atualiza o scroll para o final
+    canvas.update_idletasks()
+    canvas.yview_moveto(1.0)
+
+# Configuração da interface
 root = tk.Tk()
 root.title("Chatbot ANATEL")
-root.configure(bg='#2c2f33')
 root.geometry("960x640")
-root.minsize(960, 640)
-frame = tk.Frame(root, bg='#23272a')
-frame.place(relwidth=1, relheight=1)
+root.configure(bg='#2c2f33')
 
+# Frame principal para o Canvas e Scrollbar
+chat_frame = tk.Frame(root, bg='#23272a')
+chat_frame.pack(fill=tk.BOTH, expand=True)
 
-# Configuração do campo de exibição de mensagens
-chat_display = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=80, height=30, state=tk.DISABLED, background='#99aab5', foreground='#ffffff')
-chat_display.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+# Canvas para exibir mensagens
+canvas = tk.Canvas(chat_frame, bg="#2c2f33", highlightthickness=0)
+canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-# Campo de entrada de perguntas
-entry = tk.Entry(root, width=80)
-entry.grid(row=1, column=0, padx=10, pady=10)
+# Frame interno para mensagens
+messages_frame = tk.Frame(canvas, bg="#2c2f33")
+canvas.create_window((0, 0), window=messages_frame, anchor="nw")
 
-# Botão para enviar pergunta
-send_button = tk.Button(root, text="Enviar", command=enviar_pergunta)
-send_button.grid(row=1, column=1, padx=10, pady=10)
+# Scrollbar
+scrollbar = tk.Scrollbar(chat_frame, command=canvas.yview)
+scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+canvas.config(yscrollcommand=scrollbar.set)
 
+# Configurações de redimensionamento
+messages_frame.bind("<Configure>", lambda e: canvas.config(scrollregion=canvas.bbox("all")))
+
+# Campo de entrada
+entry = tk.Entry(root, font=("Arial", 12))
+entry.pack(fill=tk.X, padx=10, pady=5)
 entry.bind("<Return>", enviar_pergunta)
 
-# Loop principal
-agente_atual = agents[0]  # Começa com o agente Eduardo
+# Botão de enviar
+send_button = tk.Button(root, text="Enviar", command=enviar_pergunta, bg="#7289da", fg="white")
+send_button.pack(pady=5)
+
+# Configurações iniciais
+y_offset = 10
+agente_atual = agents[0]
 conversation_history = []
-# Inicia a interface
+
 root.mainloop()
 
 
