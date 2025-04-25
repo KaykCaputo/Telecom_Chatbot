@@ -75,10 +75,7 @@ class Agent:
 
 
 # URLs para coleta de contexto
-urls = [
-    "https://www.gov.br/anatel/pt-br/consumidor/perguntas-frequentes",
-    "https://www.planalto.gov.br/ccivil_03/leis/l9472.htm",
-]
+urls = ["https://www.gov.br/anatel/pt-br/consumidor/perguntas-frequentes"]
 agent_context = scrape_websites(urls)
 
 # Pdfs para coleta de contexto
